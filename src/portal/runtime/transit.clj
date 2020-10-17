@@ -12,6 +12,9 @@
 
 (defn- find-var [s] (get @rt/instance-cache [:var s]))
 
+(defn- limit-seq [value]
+  (if (seq? value) (take 1000 value) value))
+
 (defn edn->json-stream [value out]
   (let [writer
         (transit/writer
@@ -22,7 +25,7 @@
            (transit/write-handler "portal.transit/var" var->symbol)
            java.net.URL
            (transit/write-handler "r" str)}
-          :transform transit/write-meta
+          :transform (comp limit-seq transit/write-meta)
           :default-handler
           (transit/write-handler
            "portal.transit/object"

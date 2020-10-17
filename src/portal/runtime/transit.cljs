@@ -46,11 +46,14 @@
 
     :else x))
 
+(defn- limit-seq [value]
+  (if (seq? value) (take 1000 value) value))
+
 (defn edn->json [edn]
   (t/write
    (t/writer
     :json
-    {:transform write-meta
+    {:transform (comp limit-seq write-meta)
      :handlers
      {js/URL
       (t/write-handler (constantly "r") str)
